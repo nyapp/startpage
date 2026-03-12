@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Start</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=VT323&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+
+  </head>
+
+  <!-- ================= HTML structure =============== -->
+  <body>
+    <div class="page">
+      <div class="page-inner">
+        <div class="layout-wrap">
+          <div class="content-column">
+            <div class="info-block">
+              <div class="info-line">
+                <span class="info-label">Time</span>
+                <span id="clock-time" class="info-value accent-green">--:--</span>
+              </div>
+              <div class="info-line">
+                <span class="info-label">Date</span>
+                <span id="clock-date" class="info-value">----</span>
+              </div>
+              <div class="info-line">
+                <span class="info-label">Day</span>
+                <span id="year-dayline" class="info-value">Day -- / ---</span>
+              </div>
+              <div class="info-line">
+                <span class="info-label">Year Progress</span>
+                <span id="year-progressline" class="info-value info-value--nowrap">░░░░░░░░░░░░░ 0%</span>
+              </div>
+              <div id="header-weather" class="info-line" aria-live="polite" data-weather-hide-location>
+                <span class="info-label">Weather</span>
+                <span class="info-value">
+                  <span id="weather-location" class="header-weather-location">Fetching location...</span>
+                  <span id="weather-temp-desc" class="header-weather-temp-desc">
+                    <span id="weather-temp" class="header-weather-temp">--°C</span>
+                    <span id="weather-desc"> </span>
+                  </span>
+                </span>
+              </div>
+            </div>
+            <div class="links-row" aria-label="リンク">
+              <div class="link-item"><span class="link-label">ChatGPT</span><a href="https://chatgpt.com/" target="_blank" rel="noreferrer"></a></div>
+              <div class="link-item"><span class="link-label">Gemini</span><a href="https://gemini.google.com/" target="_blank" rel="noreferrer"></a></div>
+              <div class="link-item"><span class="link-label">GitHub</span><a href="https://github.com/" target="_blank" rel="noreferrer"></a></div>
+              <div class="link-item"><span class="link-label">Notion</span><a href="https://www.notion.so/" target="_blank" rel="noreferrer"></a></div>
+              <div class="link-item"><span class="link-label">Gmail</span><a href="https://mail.google.com/" target="_blank" rel="noreferrer"></a></div>
+              <div class="link-item"><span class="link-label">Calendar</span><a href="https://calendar.google.com/" target="_blank" rel="noreferrer"></a></div>
+              <div class="link-item"><span class="link-label">Drive(My Drive)</span><a href="https://drive.google.com/drive/my-drive" target="_blank" rel="noreferrer"></a></div>
+              <div class="link-item"><span class="link-label">YouTube</span><a href="https://www.youtube.com/" target="_blank" rel="noreferrer"></a></div>
+              <div class="link-item"><span class="link-label">note</span><a href="https://note.com/" target="_blank" rel="noreferrer"></a></div>
+              <div class="link-item"><span class="link-label">Amazon</span><a href="https://www.amazon.co.jp/" target="_blank" rel="noreferrer"></a></div>
+              <div class="link-item"><span class="link-label">Misoca</span><a href="https://app.misoca.jp/home" target="_blank" rel="noreferrer"></a></div>
+              <div class="link-item"><span class="link-label">30s Drowing</span><a href="https://www.posemaniacs.com/ja/tools/thirtyseconds" target="_blank" rel="noreferrer"></a></div>
+            </div>
+            <div class="slime-canvas-wrap" aria-hidden="true">
+              <canvas id="slime-canvas" class="slime-canvas" width="320" height="320"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <footer>
+          <div class="footer-hint statusbar-path">
+            <span>~</span>/start
+          </div>
+          <div class="statusbar-right">
+            <span id="statusbar-time" class="statusbar-time" aria-hidden="true">--:--:--</span>
+            <span class="cursor-blink" aria-hidden="true"></span>
+            <div class="footer-meta">
+              <span>ローカル専用</span>
+            </div>
+          </div>
+        </footer>
+      </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+      (function () {
+        const canvas = document.getElementById("slime-canvas");
+        if (!canvas) return;
+
+        const ctx = canvas.getContext("2d");
+        if (!ctx) return;
+
+        const img = new Image();
+        // プロジェクト直下の assets/slime.png を読み込む
+        img.src = "assets/slime.png";
+
+        img.onload = function () {
+          const scaleX = Math.floor(canvas.width / img.width) || 1;
+          const scaleY = Math.floor(canvas.height / img.height) || 1;
+          const scale = Math.max(1, Math.min(scaleX, scaleY));
+
+          const targetWidth = img.width * scale;
+          const targetHeight = img.height * scale;
+
+          canvas.width = targetWidth;
+          canvas.height = targetHeight;
+
+          ctx.imageSmoothingEnabled = false;
+          ctx.clearRect(0, 0, targetWidth, targetHeight);
+          ctx.drawImage(img, 0, 0, img.width, img.height, 0, 0, targetWidth, targetHeight);
+        };
+      })();
+    </script>
+    <div id="toast" class="toast" aria-live="polite"></div>
+  </body>
+</html>
