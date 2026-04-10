@@ -183,30 +183,69 @@ body::before {
   color: var(--accent);
 }
 
-.info-line#header-weather .info-value {
-  display: inline;
-}
-
-.info-line#header-weather .header-weather-temp-desc {
-  display: inline;
-}
-
 /* =============== Translate block =============== */
 .translate-block {
-  margin-top: var(--space-sm);
-  padding-top: var(--space-sm);
+  margin-top: var(--space-md);
+  padding-top: var(--space-md);
   border-top: 1px solid var(--border-terminal);
+}
+
+.translate-toggle {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  width: 100%;
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: var(--accent-yellow);
+  background: transparent;
+  border: 1px solid var(--border-bright);
+  border-radius: var(--radius-card);
+  padding: var(--space-sm) var(--space-md);
+  cursor: pointer;
+  text-align: left;
+  transition: border-color var(--transition-fast), background var(--transition-fast);
+}
+
+.translate-toggle:hover {
+  border-color: var(--accent-cyan);
+  background: var(--bg-elevated-soft);
+}
+
+.translate-toggle:focus {
+  outline: none;
+  border-color: var(--accent-cyan);
+}
+
+.translate-toggle-chevron {
+  display: inline-block;
+  flex-shrink: 0;
+  color: var(--text-muted);
+  font-size: 0.625rem;
+  line-height: 1;
+  transition: transform var(--transition-base);
+  transform: rotate(0deg);
+}
+
+.translate-block.translate-block--open .translate-toggle-chevron {
+  transform: rotate(90deg);
+}
+
+.translate-toggle-text {
+  color: var(--accent-yellow);
+}
+
+.translate-panel {
+  padding-top: var(--space-md);
 }
 
 .translate-header {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: var(--space-md);
-  margin-bottom: var(--space-sm);
-}
-
-.translate-header .info-label::after {
-  content: "";
+  margin-bottom: 0;
 }
 
 .translate-langpair {
@@ -364,32 +403,6 @@ body::before {
   max-width: 100%;
   height: auto;
   display: block;
-}
-
-/* =============== Header (legacy: hidden when using layout) =============== */
-
-.header-weather-location {
-  font-size: 0.6875rem;
-  color: var(--text-dim);
-  max-width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-#header-weather[data-weather-hide-location] .header-weather-location {
-  display: none;
-}
-
-.header-weather-temp-desc {
-  font-size: 0.75rem;
-  color: var(--text-primary);
-}
-
-.header-weather-temp-desc .header-weather-temp {
-  font-feature-settings: "tnum" 1;
-  font-variant-numeric: tabular-nums;
-  color: var(--accent);
 }
 
 .cursor-blink::after {

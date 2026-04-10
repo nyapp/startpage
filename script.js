@@ -6,18 +6,23 @@
   var yearProgressLineEl = document.getElementById("year-progressline");
 
   var STORAGE_KEY_LANG = "startpage-lang";
+  var STORAGE_KEY_TRANSLATE_OPEN = "startpage-translate-open";
   var TRANSLATIONS = {
     ja: {
       labelTime: "時刻",
       labelDate: "日付",
       labelDay: "日",
       labelYearProgress: "年の進捗",
-      labelWeather: "天気",
-      weatherFetching: "位置情報を取得中...",
-      weatherCurrentLocation: "現在地",
-      weatherUnsupported: "位置情報非対応",
-      weatherFetchFailed: "天気の取得に失敗しました",
-      weatherAllowLocation: "位置情報を許可してください",
+      labelTranslate: "翻訳",
+      translateAction: "翻訳",
+      translateFromLabel: "翻訳元言語",
+      translateToLabel: "翻訳先言語",
+      translatePlaceholder: "ここにテキストを入力...",
+      translateToggleOpen: "翻訳パネルを開く",
+      translateToggleClose: "翻訳パネルを閉じる",
+      translateLoading: "翻訳中...",
+      translateFailed: "翻訳結果を取得できませんでした。",
+      translateNetworkError: "通信エラーです。しばらくしてから再試行してください。",
       footerLocalOnly: "ローカル専用",
       toastCopied: "プロンプトをクリップボードにコピーしました",
       toastCopyFailed: "コピーに失敗しました。手動で選択してください。"
@@ -27,32 +32,19 @@
       labelDate: "Date",
       labelDay: "Day",
       labelYearProgress: "Year Progress",
-      labelWeather: "Weather",
-      weatherFetching: "Fetching location...",
-      weatherCurrentLocation: "Current location",
-      weatherUnsupported: "Geolocation not supported",
-      weatherFetchFailed: "Failed to fetch weather",
-      weatherAllowLocation: "Please allow location access",
+      labelTranslate: "Translate",
+      translateAction: "Translate",
+      translateFromLabel: "Source language",
+      translateToLabel: "Target language",
+      translatePlaceholder: "Enter text here...",
+      translateToggleOpen: "Open translate panel",
+      translateToggleClose: "Close translate panel",
+      translateLoading: "Translating...",
+      translateFailed: "Could not get translation.",
+      translateNetworkError: "Network error. Try again later.",
       footerLocalOnly: "Local only",
       toastCopied: "Prompt copied to clipboard",
       toastCopyFailed: "Copy failed. Please select manually."
-    }
-  };
-
-  var WEATHER_DESC = {
-    ja: {
-      0: "晴れ", 1: "おおむね晴れ", 2: "一部曇り", 3: "曇り", 45: "霧", 48: "霧",
-      51: "軽い霧雨", 53: "霧雨", 55: "強い霧雨", 61: "小雨", 63: "雨", 65: "大雨",
-      66: "凍雨", 67: "強い凍雨", 71: "小雪", 73: "雪", 75: "大雪", 77: "雪粒",
-      80: "にわか雨", 81: "にわか雨", 82: "強いにわか雨", 85: "にわか雪", 86: "強いにわか雪",
-      95: "雷", 96: "ひょうを伴う雷", 99: "ひょうを伴う雷"
-    },
-    en: {
-      0: "Clear", 1: "Mainly clear", 2: "Partly cloudy", 3: "Overcast", 45: "Fog", 48: "Fog",
-      51: "Light drizzle", 53: "Drizzle", 55: "Heavy drizzle", 61: "Light rain", 63: "Rain", 65: "Heavy rain",
-      66: "Freezing rain", 67: "Heavy freezing rain", 71: "Light snow", 73: "Snow", 75: "Heavy snow", 77: "Snow grains",
-      80: "Rain showers", 81: "Rain showers", 82: "Heavy rain showers", 85: "Snow showers", 86: "Heavy snow showers",
-      95: "Thunderstorm", 96: "Thunderstorm with hail", 99: "Thunderstorm with hail"
     }
   };
 
@@ -73,6 +65,23 @@
     return (map && map[key]) || TRANSLATIONS.en[key] || key;
   }
 
+  function refreshTranslateChrome() {
+    var input = document.getElementById("translate-input");
+    var fromEl = document.getElementById("translate-from");
+    var toEl = document.getElementById("translate-to");
+    var toggleBtn = document.getElementById("translate-toggle");
+    var panel = document.getElementById("translate-panel");
+    var block = document.querySelector(".translate-block");
+    if (input) input.placeholder = t("translatePlaceholder");
+    if (fromEl) fromEl.setAttribute("aria-label", t("translateFromLabel"));
+    if (toEl) toEl.setAttribute("aria-label", t("translateToLabel"));
+    if (toggleBtn && panel) {
+      var open = !panel.hidden;
+      toggleBtn.setAttribute("aria-label", open ? t("translateToggleClose") : t("translateToggleOpen"));
+      if (block) block.classList.toggle("translate-block--open", open);
+    }
+  }
+
   function applyTranslations(lang) {
     document.documentElement.lang = lang === "ja" ? "ja" : "en";
     var map = TRANSLATIONS[lang];
@@ -86,7 +95,7 @@
       btn.setAttribute("aria-pressed", isActive ? "true" : "false");
     });
     updateClock();
-    if (typeof applyLastWeather === "function") applyLastWeather();
+    refreshTranslateChrome();
   }
 
   function formatTime(date) {
@@ -186,114 +195,6 @@
     }, 2200);
   }
 
-  function weatherCodeToText(code) {
-    var map = WEATHER_DESC[getLang()] || WEATHER_DESC.en;
-    return map[code] || "—";
-  }
-
-  var lastWeather = null;
-  function applyLastWeather() {
-    if (!lastWeather) return;
-    var locationEl = document.getElementById("weather-location");
-    var tempEl = document.getElementById("weather-temp");
-    var descEl = document.getElementById("weather-desc");
-    if (!locationEl || !tempEl || !descEl) return;
-    var desc = lastWeather.code != null ? weatherCodeToText(lastWeather.code) : "";
-    locationEl.textContent = lastWeather.locationName || t("weatherCurrentLocation");
-    tempEl.textContent = lastWeather.temp != null ? Math.round(lastWeather.temp) + "°C" : "—°C";
-    descEl.textContent = desc ? " · " + desc : "";
-  }
-
-  function initWeather() {
-    var locationEl = document.getElementById("weather-location");
-    var tempEl = document.getElementById("weather-temp");
-    var descEl = document.getElementById("weather-desc");
-
-    if (!locationEl || !tempEl || !descEl) {
-      return;
-    }
-    locationEl.textContent = t("weatherFetching");
-
-    function setError(msg) {
-      locationEl.textContent = msg;
-      tempEl.textContent = "—°C";
-      descEl.textContent = "";
-      lastWeather = null;
-    }
-
-    function setWeather(locationName, temp, code) {
-      var desc = code != null ? weatherCodeToText(code) : "";
-      lastWeather = { locationName: locationName || null, temp: temp, code: code };
-      locationEl.textContent = locationName || t("weatherCurrentLocation");
-      tempEl.textContent = temp != null ? Math.round(temp) + "°C" : "—°C";
-      descEl.textContent = desc ? " · " + desc : "";
-    }
-
-    if (!navigator.geolocation) {
-      setError(t("weatherUnsupported"));
-      return;
-    }
-
-    navigator.geolocation.getCurrentPosition(
-      function (pos) {
-        var lat = pos.coords.latitude;
-        var lon = pos.coords.longitude;
-
-        var url =
-          "https://api.open-meteo.com/v1/forecast?latitude=" +
-          encodeURIComponent(lat) +
-          "&longitude=" +
-          encodeURIComponent(lon) +
-          "&current=temperature_2m,weather_code";
-
-        fetch(url)
-          .then(function (res) {
-            return res.json();
-          })
-          .then(function (data) {
-            var cur = data.current;
-            var temp = cur && cur.temperature_2m != null ? cur.temperature_2m : null;
-            var code = cur && cur.weather_code != null ? cur.weather_code : null;
-
-            var reverseUrl =
-              "https://nominatim.openstreetmap.org/reverse?format=json&lat=" +
-              encodeURIComponent(lat) +
-              "&lon=" +
-              encodeURIComponent(lon);
-
-            fetch(reverseUrl, {
-              headers: {
-                "Accept-Language": getLang() === "ja" ? "ja" : "en",
-                "User-Agent": "StartPage/1.0 (local start page)"
-              },
-              method: "GET"
-            })
-              .then(function (r) {
-                return r.json();
-              })
-              .then(function (geo) {
-                var name = "";
-                if (geo && geo.address) {
-                  var a = geo.address;
-                  name = a.city || a.town || a.village || a.municipality || a.state || a.country || "";
-                }
-                setWeather(name || null, temp, code);
-              })
-              .catch(function () {
-                setWeather(null, temp, code);
-              });
-          })
-          .catch(function () {
-            setError(t("weatherFetchFailed"));
-          });
-      },
-      function () {
-        setError(t("weatherAllowLocation"));
-      },
-      { enableHighAccuracy: false, timeout: 10000, maximumAge: 300000 }
-    );
-  }
-
   function initPromptTemplates() {
     var TEMPLATES = {
       requirements:
@@ -388,7 +289,34 @@
     var toEl = document.getElementById("translate-to");
     var btnEl = document.getElementById("translate-btn");
     var resultEl = document.getElementById("translate-result");
-    if (!inputEl || !fromEl || !toEl || !btnEl || !resultEl) return;
+    var toggleBtn = document.getElementById("translate-toggle");
+    var panel = document.getElementById("translate-panel");
+    var block = document.querySelector(".translate-block");
+    if (!inputEl || !fromEl || !toEl || !btnEl || !resultEl || !toggleBtn || !panel) return;
+
+    function setTranslateOpen(open) {
+      panel.hidden = !open;
+      toggleBtn.setAttribute("aria-expanded", open ? "true" : "false");
+      if (block) block.classList.toggle("translate-block--open", open);
+      toggleBtn.setAttribute("aria-label", open ? t("translateToggleClose") : t("translateToggleOpen"));
+      try {
+        localStorage.setItem(STORAGE_KEY_TRANSLATE_OPEN, open ? "1" : "0");
+      } catch (e) {
+        // no-op
+      }
+    }
+
+    var storedOpen = null;
+    try {
+      storedOpen = localStorage.getItem(STORAGE_KEY_TRANSLATE_OPEN);
+    } catch (e) {
+      storedOpen = null;
+    }
+    setTranslateOpen(storedOpen === "1");
+
+    toggleBtn.addEventListener("click", function () {
+      setTranslateOpen(panel.hidden);
+    });
 
     fromEl.addEventListener("change", function () {
       if (fromEl.value === toEl.value) {
@@ -411,7 +339,7 @@
       var from = fromEl.value;
       var to = toEl.value;
       var langpair = from + "|" + to;
-      resultEl.textContent = "翻訳中...";
+      resultEl.textContent = t("translateLoading");
       resultEl.classList.remove("translate-result--error");
 
       var url = "https://api.mymemory.translated.net/get?q=" + encodeURIComponent(text) + "&langpair=" + encodeURIComponent(langpair);
@@ -422,12 +350,12 @@
           if (translated) {
             resultEl.textContent = translated;
           } else {
-            resultEl.textContent = "翻訳結果を取得できませんでした。";
+            resultEl.textContent = t("translateFailed");
             resultEl.classList.add("translate-result--error");
           }
         })
         .catch(function () {
-          resultEl.textContent = "通信エラーです。しばらくしてから再試行してください。";
+          resultEl.textContent = t("translateNetworkError");
           resultEl.classList.add("translate-result--error");
         });
     }
@@ -445,7 +373,6 @@
     initLangSwitcher();
     updateClock();
     window.setInterval(updateClock, 1000);
-    initWeather();
     initPromptTemplates();
     initTranslate();
     simplifyLinkTexts();

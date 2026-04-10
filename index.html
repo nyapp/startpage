@@ -34,36 +34,7 @@
                 <span class="info-label" data-i18n="labelYearProgress">Year Progress</span>
                 <span id="year-progressline" class="info-value info-value--nowrap">░░░░░░░░░░░░░ 0%</span>
               </div>
-              <div id="header-weather" class="info-line" aria-live="polite" data-weather-hide-location>
-                <span class="info-label" data-i18n="labelWeather">Weather</span>
-                <span class="info-value">
-                  <span id="weather-location" class="header-weather-location">Fetching location...</span>
-                  <span id="weather-temp-desc" class="header-weather-temp-desc">
-                    <span id="weather-temp" class="header-weather-temp">--°C</span>
-                    <span id="weather-desc"> </span>
-                  </span>
-                </span>
-              </div>
             </div>
-            <section class="translate-block" aria-label="翻訳">
-              <div class="translate-header">
-                <span class="info-label">翻訳</span>
-                <div class="translate-langpair">
-                  <select id="translate-from" class="translate-select" aria-label="翻訳元言語">
-                    <option value="ja">日本語</option>
-                    <option value="en">English</option>
-                  </select>
-                  <span class="translate-arrow" aria-hidden="true">→</span>
-                  <select id="translate-to" class="translate-select" aria-label="翻訳先言語">
-                    <option value="en">English</option>
-                    <option value="ja">日本語</option>
-                  </select>
-                </div>
-                <button type="button" id="translate-btn" class="translate-btn">翻訳</button>
-              </div>
-              <input type="text" id="translate-input" class="translate-input" placeholder="ここにテキストを入力..." autocomplete="off" />
-              <div id="translate-result" class="translate-result" aria-live="polite"></div>
-            </section>
             <div class="links-row" aria-label="リンク">
               <div class="link-item"><span class="link-label">ChatGPT</span><a href="https://chatgpt.com/" target="_blank" rel="noreferrer"></a></div>
               <div class="link-item"><span class="link-label">Gemini</span><a href="https://gemini.google.com/" target="_blank" rel="noreferrer"></a></div>
@@ -84,6 +55,30 @@
             <div class="slime-canvas-wrap" aria-hidden="true">
               <canvas id="slime-canvas" class="slime-canvas" width="320" height="320"></canvas>
             </div>
+            <section class="translate-block" aria-labelledby="translate-toggle-label">
+              <button type="button" id="translate-toggle" class="translate-toggle" aria-expanded="false" aria-controls="translate-panel">
+                <span class="translate-toggle-chevron" aria-hidden="true">▶</span>
+                <span id="translate-toggle-label" class="translate-toggle-text" data-i18n="labelTranslate">翻訳</span>
+              </button>
+              <div id="translate-panel" class="translate-panel" hidden>
+                <div class="translate-header">
+                  <div class="translate-langpair">
+                    <select id="translate-from" class="translate-select" aria-label="翻訳元言語">
+                      <option value="ja">日本語</option>
+                      <option value="en">English</option>
+                    </select>
+                    <span class="translate-arrow" aria-hidden="true">→</span>
+                    <select id="translate-to" class="translate-select" aria-label="翻訳先言語">
+                      <option value="en">English</option>
+                      <option value="ja">日本語</option>
+                    </select>
+                  </div>
+                  <button type="button" id="translate-btn" class="translate-btn" data-i18n="translateAction">翻訳</button>
+                </div>
+                <input type="text" id="translate-input" class="translate-input" placeholder="ここにテキストを入力..." autocomplete="off" />
+                <div id="translate-result" class="translate-result" aria-live="polite"></div>
+              </div>
+            </section>
           </div>
         </div>
 
