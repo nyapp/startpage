@@ -130,6 +130,7 @@ body::before {
 }
 
 .content-column .info-block,
+.content-column .prompt-block,
 .content-column .links-row,
 .content-column .translate-block,
 .content-column .content-section {
@@ -371,8 +372,48 @@ body::before {
   color: var(--text-muted);
 }
 
-.report-rule {
-  display: none;
+/* =============== Prompt shortcuts (clipboard) =============== */
+.prompt-block {
+  margin-top: var(--space-xs);
+  padding-top: var(--space-sm);
+  border-top: 1px solid var(--border-terminal);
+}
+
+.prompt-block-title {
+  font-size: 0.8125rem;
+  line-height: 1.55;
+  color: var(--accent-yellow);
+  margin-bottom: var(--space-sm);
+  font-family: var(--font-mono);
+}
+
+.prompt-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+}
+
+.prompt-btn {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  line-height: 1.4;
+  color: var(--accent-cyan);
+  background: transparent;
+  border: 1px solid var(--border-bright);
+  border-radius: var(--radius-pill);
+  padding: 4px 10px;
+  cursor: pointer;
+  transition: border-color var(--transition-fast), background var(--transition-fast);
+}
+
+.prompt-btn:hover {
+  border-color: var(--accent-cyan);
+  background: var(--bg-elevated-soft);
+}
+
+.prompt-btn:focus {
+  outline: none;
+  border-color: var(--accent-cyan);
 }
 
 .links-row a {

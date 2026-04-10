@@ -25,7 +25,12 @@
       translateNetworkError: "通信エラーです。しばらくしてから再試行してください。",
       footerLocalOnly: "ローカル専用",
       toastCopied: "プロンプトをクリップボードにコピーしました",
-      toastCopyFailed: "コピーに失敗しました。手動で選択してください。"
+      toastCopyFailed: "コピーに失敗しました。手動で選択してください。",
+      labelPrompts: "プロンプト（コピー）",
+      promptRequirements: "要件整理",
+      promptReview: "コードレビュー",
+      promptBug: "バグ切り分け",
+      promptLearn: "学習メモ"
     },
     en: {
       labelTime: "Time",
@@ -44,7 +49,12 @@
       translateNetworkError: "Network error. Try again later.",
       footerLocalOnly: "Local only",
       toastCopied: "Prompt copied to clipboard",
-      toastCopyFailed: "Copy failed. Please select manually."
+      toastCopyFailed: "Copy failed. Please select manually.",
+      labelPrompts: "Prompts (copy)",
+      promptRequirements: "Requirements",
+      promptReview: "Code review",
+      promptBug: "Debug",
+      promptLearn: "Study notes"
     }
   };
 
@@ -198,22 +208,22 @@
   function initPromptTemplates() {
     var TEMPLATES = {
       requirements:
-        "次のプロダクト/機能について、要件整理を手伝ってください。\\n\\n" +
-        "【目的】\\n- \\n\\n【想定ユーザー】\\n- \\n\\n【ユーザーストーリー】\\n- \\n\\n" +
-        "【必須要件】\\n- \\n\\n【非機能要件 / 制約】\\n- \\n\\n" +
+        "次のプロダクト/機能について、要件整理を手伝ってください。\n\n" +
+        "【目的】\n- \n\n【想定ユーザー】\n- \n\n【ユーザーストーリー】\n- \n\n" +
+        "【必須要件】\n- \n\n【非機能要件 / 制約】\n- \n\n" +
         "抜けや矛盾があれば指摘しつつ、整理し直してください。",
       review:
-        "これから貼るコード差分について、レビューをお願いします。\\n\\n" +
-        "【背景】\\n- \\n\\n【変更の目的】\\n- \\n\\n【特に見てほしい点】\\n- パフォーマンス\\n- 設計\\n- ネーミング/可読性\\n\\n" +
+        "これから貼るコード差分について、レビューをお願いします。\n\n" +
+        "【背景】\n- \n\n【変更の目的】\n- \n\n【特に見てほしい点】\n- パフォーマンス\n- 設計\n- ネーミング/可読性\n\n" +
         "良い点・懸念点・代替案があれば具体的に指摘してください。",
       bug:
-        "バグの原因特定と切り分けを一緒に進めてください。\\n\\n" +
-        "【事象】\\n- \\n\\n【期待する動作】\\n- \\n\\n【再現手順】\\n1. \\n2. \\n\\n" +
-        "【すでに試したこと】\\n- \\n\\n" +
+        "バグの原因特定と切り分けを一緒に進めてください。\n\n" +
+        "【事象】\n- \n\n【期待する動作】\n- \n\n【再現手順】\n1. \n2. \n\n" +
+        "【すでに試したこと】\n- \n\n" +
         "考えられる原因候補と、追加で確認すべきログや切り分け手順を提案してください。",
       learn:
-        "今から貼る資料/テキストを、学習メモに落とし込みたいです。\\n\\n" +
-        "【してほしいこと】\\n- 要点の箇条書き要約\\n- 重要な用語とその説明\\n- 自分のプロダクト開発にどう応用できるかの提案（3つ程度）\\n\\n" +
+        "今から貼る資料/テキストを、学習メモに落とし込みたいです。\n\n" +
+        "【してほしいこと】\n- 要点の箇条書き要約\n- 重要な用語とその説明\n- 自分のプロダクト開発にどう応用できるかの提案（3つ程度）\n\n" +
         "過度に長くなりすぎないようにまとめてください。"
     };
 
@@ -344,7 +354,10 @@
 
       var url = "https://api.mymemory.translated.net/get?q=" + encodeURIComponent(text) + "&langpair=" + encodeURIComponent(langpair);
       fetch(url)
-        .then(function (res) { return res.json(); })
+        .then(function (res) {
+          if (!res.ok) throw new Error("HTTP " + res.status);
+          return res.json();
+        })
         .then(function (data) {
           var translated = data.responseData && data.responseData.translatedText;
           if (translated) {
