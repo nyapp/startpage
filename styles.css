@@ -130,7 +130,6 @@ body::before {
 }
 
 .content-column .info-block,
-.content-column .prompt-block,
 .content-column .links-row,
 .content-column .translate-block,
 .content-column .content-section {
@@ -372,50 +371,6 @@ body::before {
   color: var(--text-muted);
 }
 
-/* =============== Prompt shortcuts (clipboard) =============== */
-.prompt-block {
-  margin-top: var(--space-xs);
-  padding-top: var(--space-sm);
-  border-top: 1px solid var(--border-terminal);
-}
-
-.prompt-block-title {
-  font-size: 0.8125rem;
-  line-height: 1.55;
-  color: var(--accent-yellow);
-  margin-bottom: var(--space-sm);
-  font-family: var(--font-mono);
-}
-
-.prompt-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-xs);
-}
-
-.prompt-btn {
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
-  line-height: 1.4;
-  color: var(--accent-cyan);
-  background: transparent;
-  border: 1px solid var(--border-bright);
-  border-radius: var(--radius-pill);
-  padding: 4px 10px;
-  cursor: pointer;
-  transition: border-color var(--transition-fast), background var(--transition-fast);
-}
-
-.prompt-btn:hover {
-  border-color: var(--accent-cyan);
-  background: var(--bg-elevated-soft);
-}
-
-.prompt-btn:focus {
-  outline: none;
-  border-color: var(--accent-cyan);
-}
-
 .links-row a {
   color: var(--text-primary);
   text-decoration: none;
@@ -567,31 +522,6 @@ footer {
   margin-left: var(--space-sm);
 }
 
-/* =============== Toast =============== */
-.toast {
-  position: fixed;
-  right: var(--space-lg);
-  bottom: var(--space-lg);
-  padding: 12px 16px;
-  border-radius: var(--radius-pill);
-  border: 1px solid var(--border-bright);
-  background: var(--bg-elevated);
-  color: var(--text-primary);
-  font-size: 0.6875rem;
-  font-family: var(--font-mono);
-  pointer-events: none;
-  opacity: 0;
-  transform: translateY(8px);
-  transition: opacity var(--transition-base), transform var(--transition-base);
-  z-index: 40;
-  box-shadow: none;
-}
-
-.toast--visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-
 /* =============== Responsive =============== */
 
 /* Two-column stacks */
@@ -631,14 +561,6 @@ footer {
     margin-left: 0;
   }
 
-  .toast {
-    left: 12px;
-    right: 12px;
-    bottom: max(12px, env(safe-area-inset-bottom));
-    margin: 0 auto;
-    max-width: 100%;
-    text-align: center;
-  }
 }
 
 /* Very small phone */
